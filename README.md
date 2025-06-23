@@ -21,4 +21,19 @@ pytest
 - Extract key numbers and affected parties
 - Provide readability score using Flesch-Kincaid grade level
 
+## GovInfo API Client
+
+Use ``GovInfoAPIClient`` to fetch bill data from the GovInfo service.
+
+```python
+from govinfo_client import GovInfoAPIClient
+
+client = GovInfoAPIClient(api_key="YOUR_API_KEY")
+bills = client.search_bills("infrastructure", congress=118)
+
+for info in bills[:5]:
+    document = client.get_bill_document(info["packageId"])
+    print(document.metadata.bill_number)
+```
+
 
