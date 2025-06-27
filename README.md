@@ -1,6 +1,6 @@
 # US Bill Comparison Engine
 
-This project provides tools for preprocessing and summarizing United States government bills. The `bill_preprocessor` module cleans raw legislative text and structures it into sections for further analysis.
+This project provides tools for preprocessing United States government bills. The `bill_preprocessor` module cleans raw legislative text and structures it into sections for further analysis. Cleaned text can be sent directly to the OpenAI ChatGPT API for further processing.
 
 ## Preprocessor Features
 
@@ -8,6 +8,7 @@ This project provides tools for preprocessing and summarizing United States gove
 - Identify sections and amendments
 - Extract bill metadata
 - Handle PDF, HTML, and plain text inputs
+- Produce ChatGPT-ready text via ``prepare_document``
 
 Run unit tests with:
 
@@ -15,11 +16,23 @@ Run unit tests with:
 pytest
 ```
 
-## Summarizer Features
+## ChatGPT Integration
 
-- Multi-level summaries: executive, standard, and detailed
-- Extract key numbers and affected parties
-- Provide readability score using Flesch-Kincaid grade level
+Cleaned bill text can be sent to OpenAI's ChatGPT API using the
+``ChatGPTClient`` class.
+
+```python
+from pathlib import Path
+from chatgpt_client import ChatGPTClient
+from bill_preprocessor import BillPreprocessor
+
+pre = BillPreprocessor()
+doc = pre.preprocess(Path("example bill.txt").read_text())
+clean_text = pre.prepare_document(doc)
+client = ChatGPTClient(api_key="YOUR_OPENAI_KEY")
+summary = client.complete(clean_text)
+print(summary)
+```
 
 ## GovInfo API Client
 
