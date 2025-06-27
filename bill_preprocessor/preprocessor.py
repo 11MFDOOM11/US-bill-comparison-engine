@@ -124,3 +124,22 @@ class BillPreprocessor:
                 BillSection(title=current_title, text="\n".join(current_text))
             )
         return sections
+
+    def prepare_document(self, document: BillDocument, max_length: int | None = None) -> str:
+        """Return a cleaned text string suitable for ChatGPT consumption."""
+        parts: List[str] = []
+        if document.metadata.bill_number:
+            parts.append(document.metadata.bill_number)
+        if document.metadata.title:
+            parts.append(document.metadata.title)
+        for section in document.sections:
+            parts.append(section.title)
+            parts.append(section.text)
+        text = "\n".join(part.strip() for part in parts)
+        text = re.sub(r"\s+", " ", text)
+        text = re.sub(r"(\n\s*){2,}", "\n", text)
+        text = re.sub(r"^\[.*?\]\s*$", "", text, flags=re.MULTILINE)
+        text = text.encode("ascii", "ignore").decode("ascii")
+        if max_length is not None:
+            text = text[:max_length]
+        return text.strip()
